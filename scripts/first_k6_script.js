@@ -6,6 +6,11 @@ import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporte
 export const options = {
   vus: 2, // Number of virtual users
   duration: '5s', // Duration of the test
+  thresholds: {
+    http_req_duration: ['p(95)<500'], // 95% of requests should be below 500ms
+    http_req_failed: ['rate<0.01'], // Less than 1% of requests should fail
+    checks: ['rate>0.95'], // At least 95% of checks should pass
+  },
 };
 
 export default function () {
