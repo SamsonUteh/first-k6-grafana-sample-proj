@@ -1,0 +1,20 @@
+[
+    {
+        "name": "Tenali Ramakrishna",
+        "email": "4kunle-001@example.com",
+        "gender": "male",
+        "status": "active"
+    },
+    {
+        "name": "Tenali Ramakrishna",
+        "email": "5kunle-002@example.com",
+        "gender": "male",
+        "status": "active"
+    },
+    {
+        "name": "Tenali Ramakrishna",
+        "email": "6kunle-003@example.com",
+        "gender": "male",
+        "status": "active"
+    }
+]
