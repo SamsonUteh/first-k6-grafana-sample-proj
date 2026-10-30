@@ -1,6 +1,8 @@
 import http from 'k6/http';
 import { sleep, check } from 'k6';
 import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
+import {randomString} from "https://jslib.k6.io/k6-utils/1.2.0/index.js";
+import faker from 'https://cdnjs.cloudflare.com/ajax/libs/Faker/3.0.1/faker.min.js';
 
 const BASE_URL = __ENV.BASE_URL || 'https://gorest.co.in/public';
 
@@ -23,7 +25,8 @@ export const options = {
 // Add headers for the requests for authentication
 const params = {
   headers: {
-    'Authorization': 'Bearer a023688d0a92765f16eedbede961665f0852a9bb6d34f3867fb38ff5af6718e1',
+    // 'Authorization': 'Bearer a023688d0a92765f16eedbede961665f0852a9bb6d34f3867fb38ff5af6718e1',
+    'Authorization': `Bearer ${__ENV.API_TOKEN}`,
     'Accept': 'application/json',
     'Content-Type': 'application/json'
   },
@@ -52,10 +55,20 @@ export default function () {
 
   // POST Request to create a new user
   // const responseCreateUser = http.post(`${BASE_URL}/v2/users`, createUserPayload, params); When the payload is in the same file
+  
   const userIndex = (__VU - 1 + __ITER) % externalData.length;
-  const responseCreateUser = http.post(`${BASE_URL}/v2/users`, JSON.stringify(externalData[userIndex]), params); // When the payload is in a separate file
-  console.log("***payload***", externalData);
-  console.log("***payload2***", JSON.stringify(externalData[userIndex]));
+  
+  // Copy the selected user and generate a unique email
+const selectedUser = {
+  ...externalData[userIndex],
+  name: faker.name.findName(), // Generate a random name using faker
+  email: `tenali-${randomString(10)}@example.com`,
+  // email: faker.internet.email(), // Generate a random email using faker
+};
+  // const responseCreateUser = http.post(`${BASE_URL}/v2/users`, JSON.stringify(externalData[userIndex]), params); // When the payload is in a separate file
+  const responseCreateUser = http.post(`${BASE_URL}/v2/users`, JSON.stringify(selectedUser), params); // When the payload is in a separate file
+  // console.log("***payload***", externalData);
+  console.log("***payload2***", JSON.stringify(selectedUser));
   console.log("***full response***", responseCreateUser.body);
   check(responseCreateUser, {
     'is status 201': (r) => r.status === 201,
@@ -69,6 +82,6 @@ export default function () {
 // Add report generation
 export function handleSummary(data) {
   return {
-    "get-api.html": htmlReport(data) // The summary.html can be any name
+    "api.html": htmlReport(data) // The summary.html can be any name
   };
 }
